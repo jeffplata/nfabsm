@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# from gluon import *
+
+def init_db(exposed=False):
+    db = DAL('sqlite://storage.sqlite')
+    print('connected')
