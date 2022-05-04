@@ -155,5 +155,9 @@ if configuration.get('scheduler.enabled'):
 # auth.enable_record_versioning(db)
 
 db.define_table('region',
-                Field('region_name', 'string'),
-                Field('alternate_name', 'string'))df
+    Field('region_name', 'string', length=80),
+    Field('alternate_name', 'string', length=80))
+
+db.define_table('branch',
+    Field('branch_name', 'string', length=80),
+    Field('region_id', db.region))
