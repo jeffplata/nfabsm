@@ -106,5 +106,8 @@ if not configuration.get('app.production'):
             (T('Live Chat'), False,
              'http://webchat.freenode.net/?channels=web2py'),
         ]),
+        (T('Forms'), False, None, [
+            (T('AAP'), False, URL('opforms', 'index' )),
+        ]),
     ]
 

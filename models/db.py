@@ -161,3 +161,13 @@ db.define_table('region',
 db.define_table('branch',
     Field('branch_name', 'string', length=80),
     Field('region_id', db.region))
+
+db.define_table('warehouse',
+    Field('warehouse_name', 'string', length=80),
+    Field('warehouse_code', 'string', length=20))
+
+
+    warehouse_name = db.Column(db.String(80))
+    warehouse_code = db.Column(db.String(20), unique=True)
+    branch_id = db.Column(db.Integer(), db.ForeignKey('branch.id', ondelete='CASCADE'))
+    branch = db.relationship('Branch')
