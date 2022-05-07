@@ -155,19 +155,80 @@ if configuration.get('scheduler.enabled'):
 # auth.enable_record_versioning(db)
 
 db.define_table('region',
-    Field('region_name', 'string', length=80),
-    Field('alternate_name', 'string', length=80))
+    Field('region_name', 'string', length=80, unique=True),
+    Field('alternate_name', 'string', length=80, unique=True),
+    format='%(region_name)s')
+
+db.region.region_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.region.region_name)]
+db.region.alternate_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.region.alternate_name)]
 
 db.define_table('branch',
-    Field('branch_name', 'string', length=80),
-    Field('region_id', db.region))
+    Field('branch_name', 'string', length=80, unique=True),
+    Field('region_id', db.region, '%(region.region_name)s'),
+    format='%(branch_name)s')
+
+db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.branch_name)]
+
 
 db.define_table('warehouse',
-    Field('warehouse_name', 'string', length=80),
-    Field('warehouse_code', 'string', length=20))
+    Field('warehouse_name', 'string', length=80, unique=True),
+    Field('warehouse_code', 'string', length=20, unique=True),
+    Field('branch_id', db.branch),
+    format='%(warehouse_name)s')
+
+db.define_table('container',
+    Field('container_name', 'string', length=20, unique=True),
+    Field('container_shortname', 'string', length=20, unique=True),
+    Field('weight', 'decimal(8,2)'),
+    format='%(container_name)s')
+
+db.define_table('commodity',
+    Field('commodity_name', 'string', length=80, unique=True),
+    Field('is_cereal', 'boolean', default=True),
+    format='%(commodity_name)s')
+
+db.define_table('variety',
+    Field('variety_name', 'string', length=20, unique=True),
+    Field('commodity_id', db.commodity),
+    format='%(variety_name)s')
+
+db.define_table('item',
+    Field('item_name', 'string', length=80, unique=True),
+    Field('variety_id', db.variety),
+    Field('container_id', db.container),
+    Field('selling_price', 'decimal(15,2)'))
+
+doc_stamp = db.Table(db, 'doc_stamp',
+    Field('doc_date', 'date', default=request.now),
+    Field('doc_number', 'string', length=40, unique=True))
+
+db.define_table('AAP',
+    doc_stamp,
+    Field('customer', 'string', length=80),
+    Field('item_id', db.item),
+    Field('bags', 'integer'),
+    Field('net_kg_qty', 'decimal(15,2)'),
+    Field('selling_price', 'decimal(15,2)'),
+    Field('amount', 'decimal(15,2)'),
+    Field('check_no', 'string', length=40),
+    Field('warehouse_id', db.warehouse),
+    Field('prepared_by', 'string', length=80),
+    Field('approved_by', 'string', length=80),
+    auth.signature)
 
 
-    warehouse_name = db.Column(db.String(80))
-    warehouse_code = db.Column(db.String(20), unique=True)
-    branch_id = db.Column(db.Integer(), db.ForeignKey('branch.id', ondelete='CASCADE'))
-    branch = db.relationship('Branch')
+    
+
+db.warehouse.warehouse_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_name)]
+db.warehouse.warehouse_code.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_code)]
+
+db.container.container_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_name)]
+db.container.container_shortname.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_shortname)]
+
+db.commodity.commodity_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.commodity.commodity_name)]
+db.commodity.is_cereal.default = True
+
+db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.variety_name)]
+
+db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
+
