@@ -176,27 +176,43 @@ db.define_table('warehouse',
     Field('branch_id', db.branch),
     format='%(warehouse_name)s')
 
+db.warehouse.warehouse_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_name)]
+db.warehouse.warehouse_code.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_code)]
+
 db.define_table('container',
     Field('container_name', 'string', length=20, unique=True),
     Field('container_shortname', 'string', length=20, unique=True),
     Field('weight', 'decimal(8,2)'),
     format='%(container_name)s')
 
+db.container.container_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_name)]
+db.container.container_shortname.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_shortname)]
+
+
 db.define_table('commodity',
     Field('commodity_name', 'string', length=80, unique=True),
     Field('is_cereal', 'boolean', default=True),
     format='%(commodity_name)s')
+
+db.commodity.commodity_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.commodity.commodity_name)]
+db.commodity.is_cereal.default = True
 
 db.define_table('variety',
     Field('variety_name', 'string', length=20, unique=True),
     Field('commodity_id', db.commodity),
     format='%(variety_name)s')
 
+
+db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.variety_name)]
+
 db.define_table('item',
     Field('item_name', 'string', length=80, unique=True),
     Field('variety_id', db.variety),
     Field('container_id', db.container),
-    Field('selling_price', 'decimal(15,2)'))
+    Field('selling_price', 'decimal(15,2)'),
+    format='%(item_name)s')
+
+db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
 doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_date', 'date', default=request.now),
@@ -215,20 +231,3 @@ db.define_table('AAP',
     Field('prepared_by', 'string', length=80),
     Field('approved_by', 'string', length=80),
     auth.signature)
-
-
-    
-
-db.warehouse.warehouse_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_name)]
-db.warehouse.warehouse_code.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_code)]
-
-db.container.container_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_name)]
-db.container.container_shortname.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_shortname)]
-
-db.commodity.commodity_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.commodity.commodity_name)]
-db.commodity.is_cereal.default = True
-
-db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.variety_name)]
-
-db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
-
