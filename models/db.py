@@ -215,7 +215,7 @@ db.define_table('item',
 db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
 doc_stamp = db.Table(db, 'doc_stamp',
-    Field('doc_date', 'date', default=request.now),
+    Field('doc_date', 'date', default=request.now, requires = IS_DATE(format=('%m/%d/%Y'))),
     Field('doc_number', 'string', length=40, unique=True))
 
 db.define_table('AAP',
