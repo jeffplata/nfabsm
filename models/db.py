@@ -164,7 +164,7 @@ db.region.alternate_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.region.
 
 db.define_table('branch',
     Field('branch_name', 'string', length=80, unique=True),
-    Field('region_id', db.region, '%(region.region_name)s'),
+    Field('region_id', db.region, label='Region'),
     format='%(branch_name)s')
 
 db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.branch_name)]
@@ -173,7 +173,7 @@ db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.bra
 db.define_table('warehouse',
     Field('warehouse_name', 'string', length=80, unique=True),
     Field('warehouse_code', 'string', length=20, unique=True),
-    Field('branch_id', db.branch),
+    Field('branch_id', db.branch, label='Branch'),
     format='%(warehouse_name)s')
 
 db.warehouse.warehouse_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_name)]
@@ -199,7 +199,7 @@ db.commodity.is_cereal.default = True
 
 db.define_table('variety',
     Field('variety_name', 'string', length=20, unique=True),
-    Field('commodity_id', db.commodity),
+    Field('commodity_id', db.commodity, label='Commodity'),
     format='%(variety_name)s')
 
 
@@ -207,8 +207,8 @@ db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.
 
 db.define_table('item',
     Field('item_name', 'string', length=80, unique=True),
-    Field('variety_id', db.variety),
-    Field('container_id', db.container),
+    Field('variety_id', db.variety, label='Variety'),
+    Field('container_id', db.container, label='Container'),
     Field('selling_price', 'decimal(15,2)'),
     format='%(item_name)s')
 
@@ -218,16 +218,18 @@ doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_date', 'date', default=request.now, requires = IS_DATE(format=('%m/%d/%Y'))),
     Field('doc_number', 'string', length=40, unique=True))
 
-db.define_table('AAP',
+db.define_table('AAP', 
     doc_stamp,
     Field('customer', 'string', length=80),
-    Field('item_id', db.item),
+    Field('item_id', db.item, label='Item'),
     Field('bags', 'integer'),
-    Field('net_kg_qty', 'decimal(15,2)'),
+    Field('net_kg_qty', 'decimal(15,2)', label='Net Kg or Quantity'),
     Field('selling_price', 'decimal(15,2)'),
     Field('amount', 'decimal(15,2)'),
     Field('check_no', 'string', length=40),
-    Field('warehouse_id', db.warehouse),
+    Field('warehouse_id', db.warehouse, label='Warehouse'),
     Field('prepared_by', 'string', length=80),
     Field('approved_by', 'string', length=80),
-    auth.signature)
+    auth.signature, 
+    singular='AAP', plural='AAPs')
+ 

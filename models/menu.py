@@ -110,7 +110,7 @@ if not configuration.get('app.production'):
             (T('Regions'), False, URL('library', 'grid', args='region' )),
         ]),
         (T('Forms'), False, None, [
-            (T('AAP'), False, URL('opforms', 'index' )),
+            (T('AAP'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment') )),
         ]),
     ]
 
