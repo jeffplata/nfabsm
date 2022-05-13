@@ -8,5 +8,5 @@ def grid():
     tablename = request.args(0)
     title = request.vars['title']
     if not tablename in db.tables: raise HTTP(403)
-    grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=False, editable=False)
+    grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=False, editable=False, searchable=dict(parent=True, child=True))
     return dict(grid=grid, title=title)

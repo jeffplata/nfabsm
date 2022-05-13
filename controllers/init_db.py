@@ -17,6 +17,7 @@ def init_db(exposed=False):
 
     local_rice = find_or_create_commodity('Local Rice', True)
     local_palay = find_or_create_commodity('Local Palay', True)
+    by_product = find_or_create_commodity('By-Products', True)
     facilities = find_or_create_commodity('Facilities', False)
     miscellaneous = find_or_create_commodity('Miscellaneous', False)
 
@@ -42,6 +43,8 @@ def init_db(exposed=False):
     wd2 = find_or_create_variety('WD2', local_rice)
     pd1 = find_or_create_variety('PD1', local_palay)
     pd3 = find_or_create_variety('PD3', local_palay)
+    dka = find_or_create_variety('DKA', by_product)
+    dkb = find_or_create_variety('DKB', by_product)
     var_fac = find_or_create_variety('Facilities', facilities)
     var_misc = find_or_create_variety('Miscellaneous', miscellaneous)
 
@@ -54,13 +57,15 @@ def init_db(exposed=False):
         else: return False
 
     # Item(item_name, variety, container, unit price)
-    find_or_create_item('WD1', wd1, g50, 25.00)
-    find_or_create_item('WD2', wd2, g50, 23.00)
-    find_or_create_item('PD1', pd1, e50)
-    find_or_create_item('PD3', pd3, e50)
+    find_or_create_item('WD1G50', wd1, g50, 25.00)
+    find_or_create_item('WD2G50', wd2, g50, 23.00)
+    find_or_create_item('PD1E50', pd1, e50)
+    find_or_create_item('PD3E50', pd3, e50)
+    find_or_create_item('DKAE50', dka, e50)
+    find_or_create_item('DKBE50', dkb, e50)
     find_or_create_item('Tennis Court', var_fac, None, 160.00)
     find_or_create_item('Staffhouse', var_fac)
-    find_or_create_item('Educational Loan', miscellaneous, var_misc)
+    find_or_create_item('Educational Loan', var_misc)
     find_or_create_item('EA Loan', var_misc)
 
     # user management

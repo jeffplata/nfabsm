@@ -215,13 +215,15 @@ db.define_table('item',
 db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
 doc_stamp = db.Table(db, 'doc_stamp',
-    Field('doc_date', 'date', default=request.now, requires = IS_DATE(format=('%m/%d/%Y'))),
+    Field('doc_date', 'date', default=request.now, requires=IS_DATE(format='%m/%d/%Y') ),
     Field('doc_number', 'string', length=40, unique=True))
 
 db.define_table('AAP', 
     doc_stamp,
     Field('customer', 'string', length=80),
-    Field('item_id', db.item, label='Item'),
+    # Field('item_id', db.item, label='Item'),
+    Field('variety_id', db.variety, label='Variety'),
+    Field('container_id', db.container, label='Container'),
     Field('bags', 'integer'),
     Field('net_kg_qty', 'decimal(15,2)', label='Net Kg or Quantity'),
     Field('selling_price', 'decimal(15,2)'),
