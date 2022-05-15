@@ -48,25 +48,25 @@ def init_db(exposed=False):
     var_fac = find_or_create_variety('Facilities', facilities)
     var_misc = find_or_create_variety('Miscellaneous', miscellaneous)
 
-    def find_or_create_item(item_name, variety_id, container_id=None, default_price=0.00):
-        r = db(db.item.item_name == item_name).select().first()
-        if r: return r.id
-        temp = db.item.validate_and_insert(item_name=item_name,
-            variety_id=variety_id, container_id=container_id, selling_price=default_price)
-        if temp.id: return temp.id
-        else: return False
+    # def find_or_create_item(item_name, variety_id, container_id=None, default_price=0.00):
+    #     r = db(db.item.item_name == item_name).select().first()
+    #     if r: return r.id
+    #     temp = db.item.validate_and_insert(item_name=item_name,
+    #         variety_id=variety_id, container_id=container_id, selling_price=default_price)
+    #     if temp.id: return temp.id
+    #     else: return False
 
-    # Item(item_name, variety, container, unit price)
-    find_or_create_item('WD1G50', wd1, g50, 25.00)
-    find_or_create_item('WD2G50', wd2, g50, 23.00)
-    find_or_create_item('PD1E50', pd1, e50)
-    find_or_create_item('PD3E50', pd3, e50)
-    find_or_create_item('DKAE50', dka, e50)
-    find_or_create_item('DKBE50', dkb, e50)
-    find_or_create_item('Tennis Court', var_fac, None, 160.00)
-    find_or_create_item('Staffhouse', var_fac)
-    find_or_create_item('Educational Loan', var_misc)
-    find_or_create_item('EA Loan', var_misc)
+    # # Item(item_name, variety, container, unit price)
+    # find_or_create_item('WD1G50', wd1, g50, 25.00)
+    # find_or_create_item('WD2G50', wd2, g50, 23.00)
+    # find_or_create_item('PD1E50', pd1, e50)
+    # find_or_create_item('PD3E50', pd3, e50)
+    # find_or_create_item('DKAE50', dka, e50)
+    # find_or_create_item('DKBE50', dkb, e50)
+    # find_or_create_item('Tennis Court', var_fac, None, 160.00)
+    # find_or_create_item('Staffhouse', var_fac)
+    # find_or_create_item('Educational Loan', var_misc)
+    # find_or_create_item('EA Loan', var_misc)
 
     # user management
 
@@ -214,10 +214,10 @@ def init_db(exposed=False):
         variety_dict[r.id] = r.variety_name
         print(r.variety_name, commodity_dict[r.commodity_id])
 
-    print('\nItems')
-    for r in db(db.item).select():
-        print(r.item_name, variety_dict[r.variety_id], 
-            container_dict[r.container_id] if r.container_id else None, r.selling_price or '')
+    # print('\nItems')
+    # for r in db(db.item).select():
+    #     print(r.item_name, variety_dict[r.variety_id], 
+    #         container_dict[r.container_id] if r.container_id else None, r.selling_price or '')
 
     print('\n#####')
     print('** end **')

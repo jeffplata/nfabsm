@@ -110,8 +110,8 @@ if not configuration.get('app.production'):
             (T('Regions'), False, URL('library', 'grid', args='region' )),
         ]),
         (T('Forms'), False, None, [
-            (T('AAP Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment - Grains') )), 
-            (T('AAP Non-Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment - Non-Grains') )), 
+            (T('AAP Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment') )), 
+            # (T('AAP Non-Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment - Non-Grains') )), 
         ]),
     ]
 

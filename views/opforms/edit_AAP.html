@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+<h1>{{=title}}</h1>
+{{=grid}}
+<script>
+jQuery(document).ready(function(){
+    jQuery('#AAP_bags').change(function(){
+        jQuery("#AAP_net_kg_qty").val(Number(jQuery('#AAP_bags').val() * 50));
+        jQuery('#AAP_net_kg_qty').change();
+    });
+    jQuery('#AAP_net_kg_qty, #AAP_selling_price').change(function(){
+        n = Number(jQuery('#AAP_net_kg_qty').val()) * Number(jQuery('#AAP_selling_price').val())
+        jQuery('#AAP_amount').val(n)
+    });
+});
+</script>

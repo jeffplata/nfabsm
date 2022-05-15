@@ -183,7 +183,7 @@ db.define_table('container',
     Field('container_name', 'string', length=20, unique=True),
     Field('container_shortname', 'string', length=20, unique=True),
     Field('weight', 'decimal(8,2)'),
-    format='%(container_name)s')
+    format='%(container_shortname)s')
 
 db.container.container_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_name)]
 db.container.container_shortname.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.container.container_shortname)]
@@ -205,14 +205,14 @@ db.define_table('variety',
 
 db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.variety_name)]
 
-db.define_table('item',
-    Field('item_name', 'string', length=80, unique=True),
-    Field('variety_id', db.variety, label='Variety'),
-    Field('container_id', db.container, label='Container'),
-    Field('selling_price', 'decimal(15,2)'),
-    format='%(item_name)s')
+# db.define_table('item',
+#     Field('item_name', 'string', length=80, unique=True),
+#     Field('variety_id', db.variety, label='Variety'),
+#     Field('container_id', db.container, label='Container'),
+#     Field('selling_price', 'decimal(15,2)'),
+#     format='%(item_name)s')
 
-db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
+# db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
 doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_date', 'date', default=request.now, requires=IS_DATE(format='%m/%d/%Y') ),
@@ -225,13 +225,15 @@ db.define_table('AAP',
     Field('variety_id', db.variety, label='Variety'),
     Field('container_id', db.container, label='Container'),
     Field('bags', 'integer'),
-    Field('net_kg_qty', 'decimal(15,2)', label='Net Kg or Quantity'),
+    Field('net_kg_qty', 'decimal(15,2)', label='Net Kg or Quantity', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('selling_price', 'decimal(15,2)'),
-    Field('amount', 'decimal(15,2)'),
+    Field('amount', 'decimal(15,2)', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('check_no', 'string', length=40),
     Field('warehouse_id', db.warehouse, label='Warehouse'),
     Field('prepared_by', 'string', length=80),
     Field('approved_by', 'string', length=80),
     auth.signature, 
     singular='AAP', plural='AAPs')
+
+# db.AAP.amount.represent = lambda v, r: DIV('{:,}'.format(v) if v is not None else '', _style='text-align: right; width=10px;')
  
