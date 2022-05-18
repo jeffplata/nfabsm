@@ -214,6 +214,20 @@ db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.
 
 # db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
+auth.settings.extra_fields['auth_user'] = [
+    Field('branch_id', db.branch, label='Branch'),
+    ]
+
+
+db.define_table('point_of_sale',
+    Field('pos_name', 'string', length=80, unique=True, label='POS Name'),
+    Field('branch_id', db.branch, label='Branch' ),
+    format='%(pos_name)s')
+
+db.point_of_sale.pos_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.point_of_sale.pos_name)]
+db.point_of_sale.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s', zero=None)
+
+
 doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_date', 'date', default=request.now, requires=IS_DATE(format='%m/%d/%Y') ),
     Field('doc_number', 'string', length=40, unique=True))
@@ -225,15 +239,18 @@ db.define_table('AAP',
     Field('variety_id', db.variety, label='Variety'),
     Field('container_id', db.container, label='Container'),
     Field('bags', 'integer'),
-    Field('net_kg_qty', 'decimal(15,2)', label='Net Kg or Quantity', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
+    Field('net_kg_qty', 'decimal(15,3)', label='Net Kg or Quantity', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('selling_price', 'decimal(15,2)'),
     Field('amount', 'decimal(15,2)', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('check_no', 'string', length=40),
     Field('warehouse_id', db.warehouse, label='Warehouse'),
-    Field('prepared_by', 'string', length=80),
-    Field('approved_by', 'string', length=80),
+    Field('prepared_by', 'string', length=80, widget=lambda f, v: SQLFORM.widgets.text.widget(f, v, _rows="2", _style="height: 100%;")),
+    Field('approved_by', 'string', length=80, widget=lambda f, v: SQLFORM.widgets.text.widget(f, v, _rows="2", _style="height: 100%;")),
     auth.signature, 
     singular='AAP', plural='AAPs')
 
 # db.AAP.amount.represent = lambda v, r: DIV('{:,}'.format(v) if v is not None else '', _style='text-align: right; width=10px;')
- 
+
+db.define_table('client',
+    Field('client_name', 'string', length=80, unique=True),
+    )

@@ -3,7 +3,8 @@ def index(): return dict(message="hello from opforms.py")
 
 
 # Smart Grid for operattions documents/forms
-@auth.requires_membership('admin')
+# @auth.requires_membership('admin')
+@auth.requires_login()
 def grid():
     title = request.vars['title']
 
