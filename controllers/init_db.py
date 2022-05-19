@@ -142,24 +142,58 @@ def init_db(exposed=False):
     find_or_create_branch('Samar Branch', region8_id)
     
 
-    def find_or_create_warehouse(warehouse_name, warehouse_code, branch_id):
-        r = db(db.warehouse.warehouse_name == warehouse_name).select().first()
+    # def find_or_create_warehouse(warehouse_name, warehouse_code, branch_id):
+    #     r = db(db.warehouse.warehouse_name == warehouse_name).select().first()
+    #     if r: return r.id
+    #     temp = db.warehouse.validate_and_insert(warehouse_name=warehouse_name, warehouse_code=warehouse_code, branch_id=branch_id)
+    #     if temp.id: return temp.id
+    #     else: return False
+
+    # # warehouse: name, code, branch
+    # find_or_create_warehouse('Port Area GID', '123456', leyte_br_id)
+    # find_or_create_warehouse('Alang-alang GID 1', '223456', leyte_br_id)
+    # find_or_create_warehouse('Alang-alang GID 2', '323456', leyte_br_id)
+    # find_or_create_warehouse('San Pablo GID', '423456', leyte_br_id)
+    # find_or_create_warehouse('Cogon GID', '523456', leyte_br_id)
+    # find_or_create_warehouse('Maasin GID', '623456', leyte_br_id)
+    # find_or_create_warehouse('Hilongos JICA', '723456', leyte_br_id)
+    # find_or_create_warehouse('Hinunangan MLGC', '823456', leyte_br_id)
+    # find_or_create_warehouse('St. Bernard FLGC', '923456', leyte_br_id)
+    # find_or_create_warehouse('Biliran GID', '023456', leyte_br_id)
+
+
+    def find_or_create_record(tbl, fld, id_fld, **kwargs):
+        for k, v in kwargs.items():
+            if k == id_fld: val = v
+        r = db(fld == val).select().first()
         if r: return r.id
-        temp = db.warehouse.validate_and_insert(warehouse_name=warehouse_name, warehouse_code=warehouse_code, branch_id=branch_id)
+        temp = tbl.validate_and_insert(**kwargs)
         if temp.id: return temp.id
         else: return False
 
+
+    tbl = db.warehouse
+    fld = tbl.warehouse_name
+    id_fld = 'warehouse_name'
     # warehouse: name, code, branch
-    find_or_create_warehouse('Port Area GID', '123456', leyte_br_id)
-    find_or_create_warehouse('Alang-alang GID 1', '223456', leyte_br_id)
-    find_or_create_warehouse('Alang-alang GID 2', '323456', leyte_br_id)
-    find_or_create_warehouse('San Pablo GID', '423456', leyte_br_id)
-    find_or_create_warehouse('Cogon GID', '523456', leyte_br_id)
-    find_or_create_warehouse('Maasin GID', '623456', leyte_br_id)
-    find_or_create_warehouse('Hilongos JICA', '723456', leyte_br_id)
-    find_or_create_warehouse('Hinunangan MLGC', '823456', leyte_br_id)
-    find_or_create_warehouse('St. Bernard FLGC', '923456', leyte_br_id)
-    find_or_create_warehouse('Biliran GID', '023456', leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Port Area GID', warehouse_code='123456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 1', warehouse_code='223456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 2', warehouse_code='323456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='San Pablo GID', warehouse_code='423456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Cogon GID', warehouse_code='523456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Maasin GID', warehouse_code='623456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Hilongos JICA', warehouse_code='723456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Hinunangan MLGC', warehouse_code='823456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='St. Bernard FLGC', warehouse_code='923456', branch_id=leyte_br_id)
+    find_or_create_record(tbl, fld, id_fld, warehouse_name='Biliran GID', warehouse_code='023456', branch_id=leyte_br_id)
+
+    tbl = db.point_of_sale
+    fld = tbl.pos_name
+    find_or_create_record(tbl, fld, 'pos_name', pos_name='Leyte BSM Section', branch_id=leyte_br_id )
+    find_or_create_record(tbl, fld, 'pos_name', pos_name='Leyte AGS Section', branch_id=leyte_br_id )
+    find_or_create_record(tbl, fld, 'pos_name', pos_name='Cogon Warehouse, Ormoc City', branch_id=leyte_br_id )
+    find_or_create_record(tbl, fld, 'pos_name', pos_name='Maasin Warehouse', branch_id=leyte_br_id )
+    find_or_create_record(tbl, fld, 'pos_name', pos_name='Naval Warehouse', branch_id=leyte_br_id )
 
 
     db.commit()
@@ -187,7 +221,9 @@ def init_db(exposed=False):
         print(r.region_name, r.alternate_name)
 
     print('\nBranches')
+    branch_dict = {}
     for r in db(db.branch).select():
+        branch_dict[r.id] = r.branch_name
         print(r.branch_name)
 
     print('\nWarehouses')
@@ -213,6 +249,10 @@ def init_db(exposed=False):
     for r in db(db.variety).select():
         variety_dict[r.id] = r.variety_name
         print(r.variety_name, commodity_dict[r.commodity_id])
+
+    print('\nPoints of Sale')
+    for r in db(db.point_of_sale).select():
+        print(r.pos_name, branch_dict[r.branch_id])
 
     # print('\nItems')
     # for r in db(db.item).select():
