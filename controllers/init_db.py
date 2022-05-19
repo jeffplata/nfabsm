@@ -161,10 +161,11 @@ def init_db(exposed=False):
     # find_or_create_warehouse('St. Bernard FLGC', '923456', leyte_br_id)
     # find_or_create_warehouse('Biliran GID', '023456', leyte_br_id)
 
-
     def find_or_create_record(tbl, fld, id_fld, **kwargs):
         for k, v in kwargs.items():
-            if k == id_fld: val = v
+            if k == id_fld: 
+                val = v
+                break
         r = db(fld == val).select().first()
         if r: return r.id
         temp = tbl.validate_and_insert(**kwargs)
@@ -172,20 +173,45 @@ def init_db(exposed=False):
         else: return False
 
 
+    def ArrToDict(keys, vals, tbl, fld, id_fld):
+        my_dict = {}
+        for i, v in enumerate(vals):
+            for i2, v2 in enumerate(vals[i]):
+                my_dict[keys[i2]] = v2
+            find_or_create_record(tbl, fld, id_fld, **my_dict)
+
+
     tbl = db.warehouse
     fld = tbl.warehouse_name
     id_fld = 'warehouse_name'
+
+    keys = ['warehouse_name', 'warehouse_code', 'branch_id']
+    vals = [
+        ['Port Area GID', '123456', leyte_br_id],
+        ['Alangalang GID 1', '223456', leyte_br_id],
+        ['Alangalang GID 2', '323456', leyte_br_id],
+        ['San Pablo GID', '423456', leyte_br_id],
+        ['Cogon GID', '523456', leyte_br_id],
+        ['Maasin GID', '623456', leyte_br_id],
+        ['Hilongos JICA', '723456', leyte_br_id],
+        ['Hinunangan MLGC', '823456', leyte_br_id],
+        ['St. Bernard FLGC', '923456', leyte_br_id],
+        ['Biliran GID', '023456', leyte_br_id],
+    ]
+
+    ArrToDict(keys, vals, tbl, fld, id_fld)
+
     # warehouse: name, code, branch
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Port Area GID', warehouse_code='123456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 1', warehouse_code='223456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 2', warehouse_code='323456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='San Pablo GID', warehouse_code='423456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Cogon GID', warehouse_code='523456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Maasin GID', warehouse_code='623456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Hilongos JICA', warehouse_code='723456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Hinunangan MLGC', warehouse_code='823456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='St. Bernard FLGC', warehouse_code='923456', branch_id=leyte_br_id)
-    find_or_create_record(tbl, fld, id_fld, warehouse_name='Biliran GID', warehouse_code='023456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Port Area GID', warehouse_code='123456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 1', warehouse_code='223456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Alang-alang GID 2', warehouse_code='323456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='San Pablo GID', warehouse_code='423456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Cogon GID', warehouse_code='523456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Maasin GID', warehouse_code='623456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Hilongos JICA', warehouse_code='723456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Hinunangan MLGC', warehouse_code='823456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='St. Bernard FLGC', warehouse_code='923456', branch_id=leyte_br_id)
+    # find_or_create_record(tbl, fld, id_fld, warehouse_name='Biliran GID', warehouse_code='023456', branch_id=leyte_br_id)
 
     tbl = db.point_of_sale
     fld = tbl.pos_name
