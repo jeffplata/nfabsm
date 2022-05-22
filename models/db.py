@@ -92,6 +92,8 @@ auth = Auth(db, host_names=configuration.get('host.names'))
 # create all tables needed by auth, maybe add a list of extra fields
 # -------------------------------------------------------------------------
 auth.settings.extra_fields['auth_user'] = []
+# auth.settings.extra_fields['auth_user'] = [
+#     Field('branch_id', db.branch, label='Branch'), ]
 auth.define_tables(username=False, signature=False)
 
 # -------------------------------------------------------------------------
@@ -169,6 +171,11 @@ db.define_table('branch',
 
 db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.branch_name)]
 
+# extending auth_user
+# auth.settings.extra_fields['auth_user'] = [
+#     Field('branch_id', db.branch, label='Branch'), ]
+# auth.define_tables(username=False, signature=False)
+
 
 db.define_table('warehouse',
     Field('warehouse_name', 'string', length=80, unique=True),
@@ -214,10 +221,6 @@ db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.
 
 # db.item.item_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.item.item_name)]
 
-auth.settings.extra_fields['auth_user'] = [
-    Field('branch_id', db.branch, label='Branch'),
-    ]
-
 
 db.define_table('point_of_sale',
     Field('pos_name', 'string', length=80, unique=True, label='POS Name'),
@@ -228,11 +231,19 @@ db.point_of_sale.pos_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.point_
 db.point_of_sale.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s', zero=None)
 
 
+db.define_table('org_access',
+    Field('auth_user_id', db.auth_user, label='User', writable=False),
+    Field('pos_id', db.point_of_sale, label='Point of Sale'),
+    Field('branch_id', db.branch, label='Branch'),
+    Field('region_id', db.region, label='Region')
+    )
+
 doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_date', 'date', default=request.now, requires=IS_DATE(format='%m/%d/%Y') ),
     Field('doc_number', 'string', length=40, unique=True))
 
 db.define_table('AAP', 
+    Field('pos_id', db.point_of_sale, label='Point of Sale'),
     doc_stamp,
     Field('customer', 'string', length=80),
     # Field('item_id', db.item, label='Item'),
@@ -249,6 +260,7 @@ db.define_table('AAP',
     auth.signature, 
     singular='AAP', plural='AAPs')
 
+db.AAP.pos_id.requires = IS_IN_DB(db, db.point_of_sale.id, '%(pos_name)s', zero=None)
 # db.AAP.amount.represent = lambda v, r: DIV('{:,}'.format(v) if v is not None else '', _style='text-align: right; width=10px;')
 
 db.define_table('client',

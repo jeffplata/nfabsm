@@ -1,15 +1,24 @@
 {{extend 'layout.html'}}
 <h1>{{=title}}</h1>
 {{=grid}}
+
+<script src="{{=URL('static', 'js/utils.js')}}"></script>
 <script>
+
+{{=ASSIGNJS(jslast_nos = last_nos)}}
 jQuery(document).ready(function(){
+    jQuery("#AAP_doc_number").val(jslast_nos[jQuery("#AAP_pos_id").val()]);
+    jQuery("#AAP_pos_id").change(function(){
+        pos_id = jQuery('#AAP_pos_id').val();
+        jQuery("#AAP_doc_number").val(jslast_nos[pos_id]);
+    });
     jQuery('#AAP_bags').change(function(){
         jQuery("#AAP_net_kg_qty").val(Number(jQuery('#AAP_bags').val() * 50));
         jQuery('#AAP_net_kg_qty').change();
     });
     jQuery('#AAP_net_kg_qty, #AAP_selling_price').change(function(){
         n = Number(jQuery('#AAP_net_kg_qty').val()) * Number(jQuery('#AAP_selling_price').val())
-        jQuery('#AAP_amount').val(n)
+        jQuery('#AAP_amount').val(evenRound(Number(n),2).toFixed(2))
     });
 });
 </script>
