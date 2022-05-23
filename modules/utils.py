@@ -21,9 +21,10 @@ def NextSequence(str):
     digits = '0123456789'
     
     ind = -1
-    cur_char = str[ind]
+    # cur_char = str[ind]
     at_end = True
-    while at_end:
+    while at_end and (abs(ind) <= len(str)):
+        cur_char = str[ind]
         if cur_char in ascii_lowercase:
             str = shiftChar(str, ind, ascii_lowercase)
         else:
@@ -34,6 +35,5 @@ def NextSequence(str):
                     str = shiftChar(str, ind, digits)
         at_end = cur_char in 'zZ9'
         ind -= 1
-        cur_char = str[ind]
     return str
     
