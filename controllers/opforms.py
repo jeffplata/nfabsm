@@ -30,13 +30,15 @@ def grid():
         last_nos[r.id] = utils.NextSequence(last_nos[r.id])
 
     title = request.vars['title']
+    action = ''
 
     if any(x in request.args for x in ['new', 'edit']):
     # if ('edit' in request.args) or :
         response.view = 'opforms/edit_AAP.html'
-        title = request.vars['title'] + ' [' + request.args(1) + ']'
+        # title = request.vars['title'] + ' [' + request.args(1) + ']'
+        action = request.args(1)
 
     tablename = request.args(0)
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=False, editable=True, searchable=dict(parent=True, child=True))
-    return dict(grid=grid, title=title, last_nos=last_nos)
+    return dict(grid=grid, title=title, action=action, last_nos=last_nos)

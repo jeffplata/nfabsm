@@ -1,13 +1,16 @@
 {{extend 'layout.html'}}
-<h1>{{=title}}</h1>
+<h1>{{=title}} [{{=action}}]</h1>
 {{=grid}}
 
 <script src="{{=URL('static', 'js/utils.js')}}"></script>
 <script>
 
 {{=ASSIGNJS(jslast_nos = last_nos)}}
+{{=ASSIGNJS(jsaction = action)}}
 jQuery(document).ready(function(){
-    jQuery("#AAP_doc_number").val(jslast_nos[jQuery("#AAP_pos_id").val()]);
+    if (jsaction == "new") {
+        jQuery("#AAP_doc_number").val(jslast_nos[jQuery("#AAP_pos_id").val()]);
+    };
     jQuery("#AAP_pos_id").change(function(){
         pos_id = jQuery('#AAP_pos_id').val();
         jQuery("#AAP_doc_number").val(jslast_nos[pos_id]);
