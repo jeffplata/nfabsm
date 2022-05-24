@@ -33,9 +33,7 @@ def grid():
     action = ''
 
     if any(x in request.args for x in ['new', 'edit']):
-    # if ('edit' in request.args) or :
         response.view = 'opforms/edit_AAP.html'
-        # title = request.vars['title'] + ' [' + request.args(1) + ']'
         action = request.args(1)
 
     tablename = request.args(0)

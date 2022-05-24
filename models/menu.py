@@ -107,7 +107,7 @@ if not configuration.get('app.production'):
         #      'http://webchat.freenode.net/?channels=web2py'),
         # ]),
         (T('Library'), False, None, [
-            (T('Regions'), False, URL('library', 'grid', args='region' )),
+            (T('Regions'), False, URL('library', 'grid', args='region', vars=dict(title='Regions') )),
         ]),
         (T('Forms'), False, None, [
             (T('AAP Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment') )), 
