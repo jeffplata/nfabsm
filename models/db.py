@@ -166,7 +166,7 @@ db.region.alternate_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.region.
 
 db.define_table('branch',
     Field('branch_name', 'string', length=80, unique=True),
-    Field('region_id', db.region, label='Region'),
+    Field('region_id', db.region, label='Region', notnull=True),
     format='%(branch_name)s')
 
 db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.branch_name)]
