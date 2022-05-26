@@ -9,14 +9,19 @@ def index(): return dict(message="hello from library.py")
 #     return locals()
 
 def m_ondelete(table, id):
-	if table == db.region:
-		branches = db(db.branch.region_id==id).select().first()
-		org_accesses = db(db.org_access.region_id==id).select().first()
-		if branches or org_accesses:
-			# response.flash('Cannot delete this record')
-			# redirect(URL('library', 'grid', args='region', vars=dict(title='Regions')))
-			response.flash('Cannot delete this record.')
-
+    if table == db.region:
+        branches = db(db.branch.region_id==id).select().first()
+        org_accesses = db(db.org_access.region_id==id).select().first()
+        if branches or org_accesses:
+            response.flash = 'Cannot delete this record'
+            raise HTTP(403)
+    if table == db.branch:
+        warehouses = db(db.warehouse.branch_id==id).select().first()
+        points_of_sales = db(db.point_of_sale.branch_id==id).select().first()
+        org_accesses = db(db.org_access.branch_id==id).select().first()
+        if warehouses or points_of_sales or org_accesses:
+            response.flash = 'Cannot delete this record'
+            raise HTTP(403)
 
 @auth.requires_membership('admin')
 def grid():

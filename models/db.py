@@ -166,7 +166,7 @@ db.region.alternate_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.region.
 
 db.define_table('branch',
     Field('branch_name', 'string', length=80, unique=True),
-    Field('region_id', db.region, label='Region', notnull=True),
+    Field('region_id', db.region, label='Region', notnull=True, ondelete='RESTRICT'),
     format='%(branch_name)s')
 
 db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.branch_name)]
@@ -180,7 +180,7 @@ db.branch.branch_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.branch.bra
 db.define_table('warehouse',
     Field('warehouse_name', 'string', length=80, unique=True),
     Field('warehouse_code', 'string', length=20, unique=True),
-    Field('branch_id', db.branch, label='Branch'),
+    Field('branch_id', db.branch, label='Branch', ondelete='RESTRICT'),
     format='%(warehouse_name)s')
 
 db.warehouse.warehouse_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.warehouse.warehouse_name)]
@@ -206,7 +206,7 @@ db.commodity.is_cereal.default = True
 
 db.define_table('variety',
     Field('variety_name', 'string', length=20, unique=True),
-    Field('commodity_id', db.commodity, label='Commodity'),
+    Field('commodity_id', db.commodity, label='Commodity', ondelete='RESTRICT'),
     format='%(variety_name)s')
 
 
@@ -224,7 +224,8 @@ db.variety.variety_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.variety.
 
 db.define_table('point_of_sale',
     Field('pos_name', 'string', length=80, unique=True, label='POS Name'),
-    Field('branch_id', db.branch, label='Branch' ),
+    Field('branch_id', db.branch, label='Branch', ondelete='RESTRICT' ),
+    plural='Points of sales',
     format='%(pos_name)s')
 
 db.point_of_sale.pos_name.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.point_of_sale.pos_name)]
@@ -232,11 +233,11 @@ db.point_of_sale.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)
 
 
 db.define_table('org_access',
-    Field('auth_user_id', db.auth_user, label='User', unique=True),
+    Field('auth_user_id', db.auth_user, label='User', unique=True, ondelete='RESTRICT'),
     Field('access_level', 'string', requires=IS_IN_SET(['Point of Sale', 'Province', 'Region'], zero=None)),
-    Field('pos_id', db.point_of_sale, label='Point of Sale'),
-    Field('branch_id', db.branch, label='Branch'),
-    Field('region_id', db.region, label='Region'),
+    Field('pos_id', db.point_of_sale, label='Point of Sale', ondelete='RESTRICT'),
+    Field('branch_id', db.branch, label='Branch', ondelete='RESTRICT'),
+    Field('region_id', db.region, label='Region', ondelete='RESTRICT'),
     # Field('variety_ids', 'list:reference variety', label='Varieties'),
     )
 db.org_access.auth_user_id.requires = IS_IN_DB(db, db.auth_user.id, '%(first_name)s %(last_name)s', _and=IS_NOT_EMPTY())
@@ -246,18 +247,18 @@ doc_stamp = db.Table(db, 'doc_stamp',
     Field('doc_number', 'string', length=40, unique=True))
 
 db.define_table('AAP', 
-    Field('pos_id', db.point_of_sale, label='Point of Sale'),
+    Field('pos_id', db.point_of_sale, label='Point of Sale', ondelete='RESTRICT'),
     doc_stamp,
     Field('customer', 'string', length=80),
     # Field('item_id', db.item, label='Item'),
-    Field('variety_id', db.variety, label='Variety'),
-    Field('container_id', db.container, label='Container'),
+    Field('variety_id', db.variety, label='Variety', ondelete='RESTRICT'),
+    Field('container_id', db.container, label='Container', ondelete='RESTRICT'),
     Field('bags', 'integer'),
     Field('net_kg_qty', 'decimal(15,3)', label='Net Kg or Quantity', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('selling_price', 'decimal(15,2)'),
     Field('amount', 'decimal(15,2)', represent = lambda v, r: '{:,}'.format(v) if v is not None else ''),
     Field('check_no', 'string', length=40),
-    Field('warehouse_id', db.warehouse, label='Warehouse'),
+    Field('warehouse_id', db.warehouse, label='Warehouse', ondelete='RESTRICT'),
     Field('prepared_by', 'string', length=80, widget=lambda f, v: SQLFORM.widgets.text.widget(f, v, _rows="2", _style="height: 100%;")),
     Field('approved_by', 'string', length=80, widget=lambda f, v: SQLFORM.widgets.text.widget(f, v, _rows="2", _style="height: 100%;")),
     auth.signature, 
