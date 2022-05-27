@@ -108,6 +108,7 @@ if not configuration.get('app.production'):
         # ]),
         (T('Library'), False, None, [
             (T('Regions'), False, URL('library', 'grid', args='region', vars=dict(title='Regions') )),
+            (T('Organizational Access'), False, URL('library', 'grid', args='org_access', vars=dict(title='Organizational Access') )),
         ]),
         (T('Forms'), False, None, [
             (T('AAP Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment') )), 

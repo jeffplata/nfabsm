@@ -29,5 +29,5 @@ def grid():
     title = request.vars['title']
     tablename = request.args(0)
     if not tablename in db.tables: raise HTTP(403)
-    grid = SQLFORM.smartgrid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete)
+    grid = SQLFORM.smartgrid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, maxtextlength=40)
     return dict(grid=grid, title=title)
