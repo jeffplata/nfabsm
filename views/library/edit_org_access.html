@@ -1,0 +1,32 @@
+{{extend 'layout.html'}}
+<h1>{{=title}} [{{=action}}]</h1>
+{{=grid}}
+
+<script>
+
+</script>
+<script>
+{{=ASSIGNJS(jsaction = action)}}
+jQuery(document).ready(function(){
+    jQuery("#org_access_access_level").change(function(){
+        al = jQuery("#org_access_access_level").val()
+        if (al == 'Point of Sale') {
+            jQuery("#org_access_pos_id").prop("disabled", false);
+            jQuery("#org_access_branch_id").prop("disabled", true);
+            jQuery("#org_access_region_id").prop("disabled", true);
+        } else if (al == 'Branch') {
+            jQuery("#org_access_pos_id").prop("disabled", true);
+            jQuery("#org_access_branch_id").prop("disabled", false);
+            jQuery("#org_access_region_id").prop("disabled", true);
+        } else if (al == 'Region') {
+            jQuery("#org_access_pos_id").prop("disabled", true);
+            jQuery("#org_access_branch_id").prop("disabled", true);
+            jQuery("#org_access_region_id").prop("disabled", false);
+        };
+    });
+    // if (jsaction == 'new') {
+        v = jQuery("#org_access_access_level").val();
+        jQuery("#org_access_access_level").val(v).change();
+    // };
+});
+</script>

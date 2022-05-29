@@ -107,8 +107,9 @@ if not configuration.get('app.production'):
         #      'http://webchat.freenode.net/?channels=web2py'),
         # ]),
         (T('Library'), False, None, [
-            (T('Regions'), False, URL('library', 'grid', args='region', vars=dict(title='Regions') )),
-            (T('Organizational Access'), False, URL('library', 'grid', args='org_access', vars=dict(title='Organizational Access') )),
+            (T('Regions'), False, URL('library', 'sgrid', args='region', vars=dict(title='Regions') )),
+            (T('Users'), False, URL('library', 'grid', args='auth_user', vars=dict(title='Users') )),
+            (T('Organizational Access'), False, URL('library', 'sgrid', args='org_access', vars=dict(title='Organizational Access') )),
         ]),
         (T('Forms'), False, None, [
             (T('AAP Grains'), False, URL('opforms', 'grid', args='AAP', vars=dict(title='Authority to Accept Payment') )), 

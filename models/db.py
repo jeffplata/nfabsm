@@ -234,11 +234,10 @@ db.point_of_sale.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)
 
 db.define_table('org_access',
     Field('auth_user_id', db.auth_user, label='User', unique=True, ondelete='RESTRICT'),
-    Field('access_level', 'string', requires=IS_IN_SET(['Point of Sale', 'Province', 'Region'], zero=None)),
+    Field('access_level', 'string', requires=IS_IN_SET(['Point of Sale', 'Branch', 'Region'], zero=None)),
     Field('pos_id', db.point_of_sale, label='Point of Sale', ondelete='RESTRICT'),
     Field('branch_id', db.branch, label='Branch', ondelete='RESTRICT'),
     Field('region_id', db.region, label='Region', ondelete='RESTRICT'),
-    # Field('variety_ids', 'list:reference variety', label='Varieties'),
     )
 db.org_access.auth_user_id.requires = IS_IN_DB(db, db.auth_user.id, '%(first_name)s %(last_name)s', _and=IS_NOT_EMPTY())
 
