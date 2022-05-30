@@ -28,8 +28,8 @@ def m_ondelete(table, id):
             response.flash = 'Cannot delete this record'
             raise HTTP(403)
 
-
-@auth.requires_membership('admin')
+# Regions, Organizational Access
+@auth.requires_membership('admin', 'branch_admin')
 def sgrid():
     response.view = 'library/edit_record.html'
     title = request.vars['title']
@@ -46,14 +46,13 @@ def sgrid():
     return dict(grid=grid, title=title, action=action)
 
 def m_oncreate(form):
-    print('7777777777')
-    print(request.vars._formname)
-    print('8888888888')
-
-    if form.vars._formname == 'auth_user_form':
+    if request.vars._formname == 'auth_user_form':
         print('reached')
+        print(form.vars.first_name)
         form.vars.password = 'Password1'
+        print(form.vars.password)
 
+# Users
 @auth.requires_membership('admin')
 def grid():
     response.view = 'library/edit_record.html'
@@ -68,6 +67,7 @@ def grid():
 
     if tablename == 'auth_user':
     	if 'new' in request.args:
+            db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
             db.auth_user.password.writable = False
             db.auth_user.password.readable = False
 
@@ -78,5 +78,5 @@ def grid():
 
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, 
-        formname=tablename+'_form', oncreate=m_oncreate, maxtextlength=40)
+        formname=tablename+'_form', maxtextlength=40)
     return dict(grid=grid, title=title, action=action)
