@@ -45,6 +45,15 @@ def sgrid():
     grid = SQLFORM.smartgrid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, maxtextlength=40)
     return dict(grid=grid, title=title, action=action)
 
+def m_oncreate(form):
+    print('7777777777')
+    print(request.vars._formname)
+    print('8888888888')
+
+    if form.vars._formname == 'auth_user_form':
+        print('reached')
+        form.vars.password = 'Password1'
+
 @auth.requires_membership('admin')
 def grid():
     response.view = 'library/edit_record.html'
@@ -57,6 +66,17 @@ def grid():
             response.view = 'library/edit_org_access.html'
             action = 'new' if 'new' in request.args else 'edit'
 
+    if tablename == 'auth_user':
+    	if 'new' in request.args:
+            db.auth_user.password.writable = False
+            db.auth_user.password.readable = False
+
+    #         crypt_validator = db.auth_user.password.requires[0] # The validator is in a list.
+    #         hash_password = lambda password: crypt_validator(password)[0]
+    #         db.auth_user.password.default = hash_password('Password1')
+            # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+
     if not tablename in db.tables: raise HTTP(403)
-    grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, maxtextlength=40)
+    grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, 
+        formname=tablename+'_form', oncreate=m_oncreate, maxtextlength=40)
     return dict(grid=grid, title=title, action=action)
