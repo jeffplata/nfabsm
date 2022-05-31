@@ -55,7 +55,7 @@ def m_oncreate(form):
 
 # Users
 @auth.requires_membership('admin')
-def grid():
+def manage_users():
     response.view = 'library/edit_record.html'
     title = request.vars['title']
     tablename = request.args(0)
