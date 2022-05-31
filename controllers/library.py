@@ -29,7 +29,8 @@ def m_ondelete(table, id):
             raise HTTP(403)
 
 # Regions, Organizational Access
-@auth.requires_membership('admin', 'branch_admin')
+# @auth.requires_membership(role=='admin' or role=='branch_admin')
+@auth.requires(auth.has_membership(role='admin') or auth.has_membership(role='branch_admin'))
 def sgrid():
     response.view = 'library/edit_record.html'
     title = request.vars['title']
