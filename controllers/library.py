@@ -48,10 +48,7 @@ def sgrid():
 
 def m_oncreate(form):
     if request.vars._formname == 'auth_user_form':
-        print('reached')
-        print(form.vars.first_name)
         form.vars.password = 'Password1'
-        print(form.vars.password)
 
 # Users
 @auth.requires_membership('admin')
