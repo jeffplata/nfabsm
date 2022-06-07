@@ -46,9 +46,9 @@ def sgrid():
     grid = SQLFORM.smartgrid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, maxtextlength=40)
     return dict(grid=grid, title=title, action=action)
 
-def m_oncreate(form):
-    if request.vars._formname == 'auth_user_form':
-        form.vars.password = 'Password1'
+# def m_oncreate(form):
+#     if request.vars._formname == 'auth_user_form':
+#         form.vars.password = 'Password1'
 
 # Users
 @auth.requires_membership('admin')
