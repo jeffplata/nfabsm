@@ -42,6 +42,15 @@ def sgrid():
             response.view = 'library/edit_org_access.html'
             action = 'new' if 'new' in request.args else 'edit'
 
+    if 'warehouse.branch_id' in request.args:
+        title = 'Warehouses'
+    else:
+        if 'branch.region_id' in request.args:
+            title = 'Branches'
+        else:
+            if 'region' in request.args:
+                title = 'Regions'
+
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.smartgrid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, maxtextlength=40)
     return dict(grid=grid, title=title, action=action)
