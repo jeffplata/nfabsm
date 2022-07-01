@@ -267,3 +267,9 @@ db.AAP.pos_id.requires = IS_IN_DB(db, db.point_of_sale.id, '%(pos_name)s', zero=
 db.define_table('client',
     Field('client_name', 'string', length=80, unique=True),
     )
+
+db.define_table('user_location',
+    Field('auth_user_id', db.auth_user, label='User', unique=True, ondelete='RESTRICT'),
+    Field('region_id', db.region, label='Region', ondelete='RESTRICT'),
+    Field('branch_id', db.branch, label='Branch', ondelete='RESTRICT')
+    )
