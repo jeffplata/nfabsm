@@ -73,10 +73,13 @@ def manage_users():
             action = 'new' if 'new' in request.args else 'edit'
 
     if tablename == 'auth_user':
-    	if 'new' in request.args:
-            db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
-            db.auth_user.password.writable = False
-            db.auth_user.password.readable = False
+        if any(x in request.args for x in ['new', 'edit']):
+            response.view = 'library/edit_user.html'
+            action = 'new' if 'new' in request.args else 'edit'
+            if 'new' in request.args:
+                db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+                db.auth_user.password.writable = False
+                db.auth_user.password.readable = False
 
     #         crypt_validator = db.auth_user.password.requires[0] # The validator is in a list.
     #         hash_password = lambda password: crypt_validator(password)[0]
