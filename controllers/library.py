@@ -72,6 +72,7 @@ def manage_users():
             response.view = 'library/edit_org_access.html'
             action = 'new' if 'new' in request.args else 'edit'
 
+    editing_user = False
     if tablename == 'auth_user':
         if any(x in request.args for x in ['new', 'edit']):
             response.view = 'library/edit_user.html'
@@ -88,5 +89,8 @@ def manage_users():
 
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, 
-        formname=tablename+'_form', maxtextlength=40)
+        formname=tablename+'_form', maxtextlength=40,
+        links = [lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
+            'View Post', _href=URL("library", "manage_users", "view", args=[row.id]), _class='button btn btn-secondary')]
+        )
     return dict(grid=grid, title=title, action=action)
