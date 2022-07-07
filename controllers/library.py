@@ -90,14 +90,30 @@ def manage_users():
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
         formname=tablename+'_form', maxtextlength=40,
-        links = [lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
-            'View (1)', _href=URL('library', 'manage_users', args=['auth_user', 'view', 'auth_user', row.id], 
+        links = [
+            lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
+            'EDIT', _href=URL('library', 'edit_user', args=['auth_user', 'view', 'auth_user', row.id], 
             vars=dict(title='Users'), user_signature=True, hash_vars=False), 
             _class='button btn btn-secondary'),
-        lambda row: A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"),
+            lambda row: A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"),
             'Edit (1)', _href=URL('library', 'manage_users', args=['auth_user', 'edit', 'auth_user', row.id], 
             vars=dict(title='Users'), user_signature=True, hash_vars=False), 
             _class='button btn btn-secondary'),
             ]
         )
+    grid.links = [lambda row: A('Test', _href="#")]
     return dict(grid=grid, title=title, action=action)
+
+def editUserAnchor():
+    anchor = A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
+            'EDIT', _href=URL('library', 'edit_user', args=['auth_user', 'view', 'auth_user', row.id], 
+            vars=dict(title='Users'), user_signature=True, hash_vars=False), _class='button btn btn-secondary')
+    return anchor
+
+@auth.requires_login()
+def edit_user():
+    grid = SQLFORM(db.auth_user,
+        # buttons = [BUTTON('Back', _type="button", _class="btn-secondary", 
+        #     _onClick="parent.location='%s'" % URL('library', 'manage_users', args='auth_user', vars=dict(title='Users')))]
+        )
+    return dict(grid=grid, title=request.vars['title'])
