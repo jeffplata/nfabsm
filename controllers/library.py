@@ -88,9 +88,16 @@ def manage_users():
             # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
 
     if not tablename in db.tables: raise HTTP(403)
-    grid = SQLFORM.grid(db[tablename], args=[tablename], deletable=True, editable=True, ondelete=m_ondelete, 
+    grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
         formname=tablename+'_form', maxtextlength=40,
         links = [lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
-            'View Post', _href=URL("library", "manage_users", "view", args=[row.id]), _class='button btn btn-secondary')]
+            'View (1)', _href=URL('library', 'manage_users', args=['auth_user', 'view', 'auth_user', row.id], 
+            vars=dict(title='Users'), user_signature=True, hash_vars=False), 
+            _class='button btn btn-secondary'),
+        lambda row: A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"),
+            'Edit (1)', _href=URL('library', 'manage_users', args=['auth_user', 'edit', 'auth_user', row.id], 
+            vars=dict(title='Users'), user_signature=True, hash_vars=False), 
+            _class='button btn btn-secondary'),
+            ]
         )
     return dict(grid=grid, title=title, action=action)
