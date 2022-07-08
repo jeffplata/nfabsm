@@ -116,4 +116,7 @@ def edit_user():
         # buttons = [BUTTON('Back', _type="button", _class="btn-secondary", 
         #     _onClick="parent.location='%s'" % URL('library', 'manage_users', args='auth_user', vars=dict(title='Users')))]
         )
+    my_extra_element = TR(LABEL('I agree to the terms and conditions'),
+                          INPUT(_name='agree', value=True, _type='checkbox'))
+    grid[0].insert(0, my_extra_element)
     return dict(grid=grid, title=request.vars['title'])
