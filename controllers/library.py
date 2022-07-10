@@ -112,11 +112,16 @@ def editUserAnchor():
 
 @auth.requires_login()
 def edit_user():
-    grid = SQLFORM(db.auth_user,
+    grid = SQLFORM(db.auth_user, _class="web2py_grid")
         # buttons = [BUTTON('Back', _type="button", _class="btn-secondary", 
         #     _onClick="parent.location='%s'" % URL('library', 'manage_users', args='auth_user', vars=dict(title='Users')))]
-        )
-    my_extra_element = TR(LABEL('I agree to the terms and conditions'),
-                          INPUT(_name='agree', value=True, _type='checkbox'))
+    # my_extra_element = TR(LABEL('I agree to the terms and conditions'),
+    #                       INPUT(_name='agree', value=True, _type='checkbox'))
+    my_extra_element = DIV(
+                            A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
+                                SPAN('Back', _class="buttontext button", _title="Back"), _href=URL(), _class="button btn btn-default btn-secondary"),
+                            A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"), 
+                                SPAN('Edit', _class="buttontext button"), _href=URL(), _class="button btn btn-secondary"),
+                       _class="form_header row_buttons")
     grid[0].insert(0, my_extra_element)
     return dict(grid=grid, title=request.vars['title'])
