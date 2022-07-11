@@ -72,20 +72,18 @@ def manage_users():
             response.view = 'library/edit_org_access.html'
             action = 'new' if 'new' in request.args else 'edit'
 
-    editing_user = False
+    # editing_user = False
     if tablename == 'auth_user':
         if any(x in request.args for x in ['new', 'edit']):
             response.view = 'library/edit_user.html'
             action = 'new' if 'new' in request.args else 'edit'
             if 'new' in request.args:
-                db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
-                db.auth_user.password.writable = False
-                db.auth_user.password.readable = False
-
-    #         crypt_validator = db.auth_user.password.requires[0] # The validator is in a list.
-    #         hash_password = lambda password: crypt_validator(password)[0]
-    #         db.auth_user.password.default = hash_password('Password1')
-            # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+                # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+                # db.auth_user.password.writable = False
+                # db.auth_user.password.readable = False
+                redirect(URL('edit_user', vars=dict(title="Add User")))
+            else:
+                redirect(URL('edit_user', args=19, vars=dict(title="Edit User")))
 
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
@@ -101,7 +99,7 @@ def manage_users():
             _class='button btn btn-secondary'),
             ]
         )
-    grid.links = [lambda row: A('Test', _href="#")]
+    # grid.links = [lambda row: A('Test', _href="#")]
     return dict(grid=grid, title=title, action=action)
 
 def editUserAnchor():
@@ -111,17 +109,59 @@ def editUserAnchor():
     return anchor
 
 @auth.requires_login()
+def add_user():
+    return
+
+@auth.requires_login()
 def edit_user():
-    grid = SQLFORM(db.auth_user, _class="web2py_grid")
-        # buttons = [BUTTON('Back', _type="button", _class="btn-secondary", 
-        #     _onClick="parent.location='%s'" % URL('library', 'manage_users', args='auth_user', vars=dict(title='Users')))]
-    # my_extra_element = TR(LABEL('I agree to the terms and conditions'),
-    #                       INPUT(_name='agree', value=True, _type='checkbox'))
+    if request.args:
+        # id passed, edit record
+        user = db.auth_user(request.args(0))
+        # user = db(db.auth_user.id==request.args(0)).select('id', 'first_name').first()
+        user_loc = db.user_location(auth_user_id=user.id)
+        fields = []
+        for f in user: fields.append(f)
+        for f in user_loc: fields.append(f)
+        print('////////////\n')
+        for f in fields: print(f)
+    else:
+        # id not passed, new record
+        db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+
+    db.auth_user.password.writable = False
+    db.auth_user.password.readable = False
+    db.user_location.auth_user_id.writable = False
+    db.user_location.auth_user_id.readable = False
+
+    grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
+    if request.args:
+        for f in db.auth_user:
+            grid.vars[f.name] = user[f.name]
+        for f in db.user_location:
+            grid.vars[f.name] = user_loc[f.name]
+
+    if grid.process().accepted:
+        if grid.vars.id is None:
+            print('id is none', grid.vars.id)
+            # new record
+            id = db.auth_user.insert(**db.auth_user._filter_fields(grid.vars))
+            grid.vars.auth_user_id = id
+            id = db.user_location.insert(**db.user_location._filter_fields(grid.vars))
+            response.flash = 'New user added succesully.'
+        else:
+            print('id is NOT none', grid.vars.id)
+            # existing record
+            db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
+            db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
+            response.flash = 'User record updated successfully.'
+
     my_extra_element = DIV(
                             A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
-                                SPAN('Back', _class="buttontext button", _title="Back"), _href=URL(), _class="button btn btn-default btn-secondary"),
-                            A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"), 
-                                SPAN('Edit', _class="buttontext button"), _href=URL(), _class="button btn btn-secondary"),
+                                SPAN('Back', _class="buttontext button", _title="Back"), 
+                                _href=URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True ), 
+                                _class="button btn btn-default btn-secondary"),
+                            # A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"), 
+                            #     SPAN('Edit', _class="buttontext button"), _href=URL(), _class="button btn btn-secondary"),
                        _class="form_header row_buttons")
     grid[0].insert(0, my_extra_element)
     return dict(grid=grid, title=request.vars['title'])
