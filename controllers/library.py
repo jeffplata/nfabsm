@@ -117,7 +117,6 @@ def edit_user():
     if request.args:
         # id passed, edit record
         user = db.auth_user(request.args(0))
-        # user = db(db.auth_user.id==request.args(0)).select('id', 'first_name').first()
         user_loc = db.user_location(auth_user_id=user.id)
         fields = []
         for f in user: fields.append(f)
