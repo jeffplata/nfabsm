@@ -114,45 +114,51 @@ def add_user():
 
 @auth.requires_login()
 def edit_user():
-    if request.args:
-        # id passed, edit record
-        user = db.auth_user(request.args(0))
-        user_loc = db.user_location(auth_user_id=user.id)
-        fields = []
-        for f in user: fields.append(f)
-        for f in user_loc: fields.append(f)
-        print('////////////\n')
-        for f in fields: print(f)
-    else:
+    # if request.args: there is always request.args(0)
+    user = db.auth_user(request.args(0))
+    user_loc = db.user_location(auth_user_id=user.id)
+    fields = []
+    for f in user: fields.append(f)
+    for f in user_loc: fields.append(f)
+    
+    print('////////////\n')
+    for f in fields: print(f)
+    
+    # else:
         # id not passed, new record
-        db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
+        # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
 
     db.auth_user.password.writable = False
     db.auth_user.password.readable = False
     db.user_location.auth_user_id.writable = False
     db.user_location.auth_user_id.readable = False
 
-    grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
-    if request.args:
-        for f in db.auth_user:
-            grid.vars[f.name] = user[f.name]
-        for f in db.user_location:
-            grid.vars[f.name] = user_loc[f.name]
+    emails = db(db.auth_user.email != user.email)
+    db.auth_user.email.requires = IS_NOT_IN_DB(emails, 'auth_user.email')
 
-    if grid.process().accepted:
-        if grid.vars.id is None:
-            print('id is none', grid.vars.id)
-            # new record
-            id = db.auth_user.insert(**db.auth_user._filter_fields(grid.vars))
-            grid.vars.auth_user_id = id
-            id = db.user_location.insert(**db.user_location._filter_fields(grid.vars))
-            response.flash = 'New user added succesully.'
-        else:
-            print('id is NOT none', grid.vars.id)
-            # existing record
-            db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
-            db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
-            response.flash = 'User record updated successfully.'
+    grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
+    # if request.args:
+    for f in db.auth_user:
+        grid.vars[f.name] = user[f.name]
+    for f in db.user_location:
+        grid.vars[f.name] = user_loc[f.name]
+
+    grid.element('#no_table_email')['_readonly'] = 'readonly'
+
+    # if grid.process().accepted:
+        # if grid.vars.id is None:
+        #     print('id is none', grid.vars.id)
+        #     # new record
+        #     id = db.auth_user.insert(**db.auth_user._filter_fields(grid.vars))
+        #     grid.vars.auth_user_id = id
+        #     id = db.user_location.insert(**db.user_location._filter_fields(grid.vars))
+        #     response.flash = 'New user added succesully.'
+        # else:
+
+    if grid.validate():
+        db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
+        db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
+        response.flash = 'User record updated successfully.'
 
     my_extra_element = DIV(
                             A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
