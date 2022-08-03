@@ -83,7 +83,7 @@ def manage_users():
                 # db.auth_user.password.readable = False
                 redirect(URL('edit_user', vars=dict(title="Add User")))
             else:
-                redirect(URL('edit_user', args=19, vars=dict(title="Edit User")))
+                redirect(URL('edit_user', args=request.args[3], vars=dict(title="Edit User")))
 
     if not tablename in db.tables: raise HTTP(403)
     grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
@@ -121,8 +121,8 @@ def edit_user():
     for f in user: fields.append(f)
     for f in user_loc: fields.append(f)
     
-    print('////////////\n')
-    for f in fields: print(f)
+    # print('////////////\n')
+    # for f in fields: print(f)
     
     # else:
         # id not passed, new record
@@ -156,8 +156,10 @@ def edit_user():
         # else:
 
     if grid.validate():
-        db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
-        db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
+        # db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
+        # db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
+        user.update_record(**db.auth_user._filter_fields(grid.vars))
+        user_loc.update_record(**db.user_location._filter_fields(grid.vars))
         response.flash = 'User record updated successfully.'
 
     my_extra_element = DIV(
