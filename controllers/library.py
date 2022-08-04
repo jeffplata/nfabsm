@@ -83,6 +83,13 @@ def manage_users():
                 # db.auth_user.password.readable = False
                 redirect(URL('edit_user', vars=dict(title="Add User")))
             else:
+                if request.env.http_referer:
+                    session.back_url = request.env.http_referer
+                else:
+                    session.back_url = URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
+                session.back_url = None
+                # session.back_url = URL(args=request.args, vars=request.get_vars, host=True)
+                # print('session.back_url = ', session.back_url)
                 redirect(URL('edit_user', args=request.args[3], vars=dict(title="Edit User")))
 
     if not tablename in db.tables: raise HTTP(403)
@@ -155,17 +162,28 @@ def edit_user():
         #     response.flash = 'New user added succesully.'
         # else:
 
+    # if request.env.http_referer:
+    #     back_url = request.env.http_referer
+    # else:
+    #     back_url = URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
+                
+    # print('(2) session.back_url = ', session.back_url)
+
+    back_url = session.back_url or URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
+    
     if grid.validate():
         # db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
         # db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
         user.update_record(**db.auth_user._filter_fields(grid.vars))
         user_loc.update_record(**db.user_location._filter_fields(grid.vars))
         response.flash = 'User record updated successfully.'
+        print('(3) session.back_url = ', session.back_url)
+        redirect( session.back_url )
 
     my_extra_element = DIV(
                             A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
                                 SPAN('Back', _class="buttontext button", _title="Back"), 
-                                _href=URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True ), 
+                                _href=back_url, 
                                 _class="button btn btn-default btn-secondary"),
                             # A(SPAN(XML("&nbsp"), _class="icon pen icon-pencil glyphicon glyphicon-pencil"), 
                             #     SPAN('Edit', _class="buttontext button"), _href=URL(), _class="button btn btn-secondary"),
