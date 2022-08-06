@@ -1,3 +1,12 @@
 {{extend 'layout.html'}}
 <h1>{{=title}} /This is the library/edit_user.html template</h1>
 {{=grid}}
+
+<script>
+jQuery(document).ready(function(){
+    jQuery("#no_table_region_id").change(function(){
+        par = $(this).val();
+        ajax("{{=URL('library', 'branches')}}" + '?region_id=' + par, [], 'no_table_branch_id');
+    });
+});
+</script>

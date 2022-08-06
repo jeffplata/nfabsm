@@ -79,15 +79,13 @@ def manage_users():
             action = 'new' if 'new' in request.args else 'edit'
             if 'new' in request.args:
                 # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
-                # db.auth_user.password.writable = False
-                # db.auth_user.password.readable = False
                 redirect(URL('edit_user', vars=dict(title="Add User")))
             else:
                 if request.env.http_referer:
                     session.back_url = request.env.http_referer
                 else:
                     session.back_url = URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
-                session.back_url = None
+                # session.back_url = None
                 # session.back_url = URL(args=request.args, vars=request.get_vars, host=True)
                 # print('session.back_url = ', session.back_url)
                 redirect(URL('edit_user', args=request.args[3], vars=dict(title="Edit User")))
@@ -97,6 +95,7 @@ def manage_users():
         formname=tablename+'_form', maxtextlength=40,
         links = [
             lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
+            # 'EDIT', _href=URL('library', 'branches', args=8, 
             'EDIT', _href=URL('library', 'edit_user', args=['auth_user', 'view', 'auth_user', row.id], 
             vars=dict(title='Users'), user_signature=True, hash_vars=False), 
             _class='button btn btn-secondary'),
@@ -117,20 +116,28 @@ def editUserAnchor():
 
 @auth.requires_login()
 def add_user():
+    # todo: add user
     return
+
+def branches():
+    branches = db(db.branch.region_id==request.vars.region_id).select(db.branch.ALL)
+    ops1 = ['<option value=""></option>']
+    ops = ops1 + [f"<option value={i['id']}>{i['branch_name']}</option>" for i in branches]
+    return ops
 
 @auth.requires_login()
 def edit_user():
     # if request.args: there is always request.args(0)
     user = db.auth_user(request.args(0))
     user_loc = db.user_location(auth_user_id=user.id)
-    fields = []
-    for f in user: fields.append(f)
-    for f in user_loc: fields.append(f)
-    
-    # print('////////////\n')
-    # for f in fields: print(f)
-    
+    # fields = []
+    # for f in user: fields.append(f)
+    # fields.append('region_id')
+    # fields.append('branch_id')
+
+    branches = db().select(db.branch.ALL)
+    branches_op = [OPTION(record['branch_name'], _value=record['id']) for record in branches]
+
     # else:
         # id not passed, new record
         # db.auth_user.password.default = db.auth_user.password.requires[0]('Password1')[0]
@@ -147,8 +154,9 @@ def edit_user():
     # if request.args:
     for f in db.auth_user:
         grid.vars[f.name] = user[f.name]
-    for f in db.user_location:
-        grid.vars[f.name] = user_loc[f.name]
+    if user_loc:
+        for f in db.user_location:
+            grid.vars[f.name] = user_loc[f.name]
 
     grid.element('#no_table_email')['_readonly'] = 'readonly'
 
@@ -167,18 +175,20 @@ def edit_user():
     # else:
     #     back_url = URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
                 
-    # print('(2) session.back_url = ', session.back_url)
-
     back_url = session.back_url or URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
     
     if grid.validate():
         # db.auth_user.update_record(**db.auth_user._filter_fields(grid.vars))
         # db.user_location.update_record(**db.user_location._filter_fields(grid.vars))
         user.update_record(**db.auth_user._filter_fields(grid.vars))
-        user_loc.update_record(**db.user_location._filter_fields(grid.vars))
+        if user_loc:
+            user_loc.update_record(**db.user_location._filter_fields(grid.vars))
+        else:
+            if grid.vars.region_id:
+                grid.vars.auth_user_id = grid.vars.id
+                db.user_location.insert(**db.user_location._filter_fields(grid.vars))
         response.flash = 'User record updated successfully.'
-        print('(3) session.back_url = ', session.back_url)
-        redirect( session.back_url )
+        redirect( back_url )
 
     my_extra_element = DIV(
                             A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
