@@ -3,10 +3,17 @@
 {{=grid}}
 
 <script>
-jQuery(document).ready(function(){
-    jQuery("#no_table_region_id").change(function(){
-        par = $(this).val();
-        ajax("{{=URL('library', 'branches')}}" + '?region_id=' + par, [], 'no_table_branch_id');
+        jQuery("#no_table_region_id").change(function(){
+            region_id = $(this).val();
+            // branch_id = jQuery('#no_table_branch_id').val();
+            ajax("{{=URL('library', 'branches')}}" + '?region_id=' + region_id, [], 'no_table_branch_id');
+            // jQuery('#no_table_branch_id').val(branch_id);
+        });
+
+    jQuery(document).ready(function(){
+
+        // todo: solve the unsettable branch_id
+        // jQuery("#no_table_region_id").change();
+        jQuery("#no_table_branch_id").val(5).attr('selected', 'selected');
     });
-});
 </script>

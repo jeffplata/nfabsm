@@ -56,3 +56,20 @@ def download():
     http://..../[app]/default/download/[filename]
     """
     return response.download(request, db)
+
+
+auth.settings.login_onaccept = lambda form: __on_login()
+auth.settings.logout_onlogout = lambda user: __on_logout()
+
+def __on_login():
+    user_location_ids = db(db.user_location.auth_user_id==auth.user_id).\
+        select(db.user_location.region_id, db.user_location.branch_id).first()
+    if user_location_ids:
+        session.user_region_id = user_location_ids['region_id']
+        session.user_branch_id = user_location_ids['branch_id']
+    return None
+
+def __on_logout():
+    session.user_region_id = None
+    session.user_branch_id = None
+    return None
