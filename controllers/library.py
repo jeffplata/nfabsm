@@ -170,10 +170,9 @@ def edit_user():
     emails = db(db.auth_user.email != user.email)
     db.auth_user.email.requires = IS_NOT_IN_DB(emails, 'auth_user.email')
 
-    if user_loc:
-        allowed_branches = db(db.branch.region_id==user_loc['region_id'])
-        db.user_location.branch_id.requires = IS_IN_DB(allowed_branches, 'branch.branch_name')
-    # db.user_location.branch_id.default = user_loc['branch_id']
+    # if user_loc:
+    #     allowed_branches = db(db.branch.region_id==user_loc['region_id'])
+    #     db.user_location.branch_id.requires = IS_IN_DB(allowed_branches, 'branch.branch_name')
 
     region_branch_common_filter()
 
@@ -185,7 +184,6 @@ def edit_user():
             grid.vars[f.name] = user_loc[f.name]
 
     grid.element('#no_table_email')['_readonly'] = 'readonly'
-    # grid.element('#no_table_branch_id')['_value=4']
 
     back_url = session.back_url or URL('library', 'manage_users', args='auth_user', vars=dict(title='Users'), user_signature=True )
     
