@@ -103,25 +103,38 @@ def editUserAnchor():
             vars=dict(title='Users'), user_signature=True, hash_vars=False), _class='button btn btn-secondary')
     return anchor
 
+def form_extra_element(back_url):
+    el = DIV(
+            A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
+                SPAN('Back', _class="buttontext button", _title="Back"), 
+                _href=back_url, 
+                _class="button btn btn-default btn-secondary"),
+           _class="form_header row_buttons")
+    return el
+
 def branches():
+    ops = ''
     if request.vars.region_id:
-        branches = db(db.branch.region_id==request.vars.region_id).select(db.branch.ALL)
-        ops1 = ['<option value=""></option>']
+        if session.user_branch_id:
+            branches = db(db.branch.id==session.user_branch_id).select(db.branch.ALL)
+            ops1 = []
+        else:
+            branches = db(db.branch.region_id==request.vars.region_id).select(db.branch.ALL)
+            ops1 = ['<option value=""></option>']
+        [print(i['id'], i['branch_name']) for i in branches]
         ops = ops1 + [f"<option value={i['id']}>{i['branch_name']}</option>" for i in branches]
-    else:
-        ops = ''
     return ops
 
 def region_branch_common_filter():
     if session.user_region_id:
         db.region._common_filter = lambda q: db.region.id==session.user_region_id
         db.user_location.region_id.requires = IS_IN_DB(db, db.region.id, "%(region_name)s", zero=None)
-        if session.user_branch_id:
-            db.branch._common_filter = lambda q: db.branch.id==session.user_branch_id
-            db.user_location.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s', zero=None)
-        else:
-            db.branch._common_filter = lambda q: db.branch.region_id==session.user_region_id
-            db.user_location.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s')
+        # if session.user_branch_id:
+        #     db.branch._common_filter = lambda q: db.branch.id==session.user_branch_id
+        #     db.user_location.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s', zero=None)
+        # else:
+        #     db.branch._common_filter = lambda q: db.branch.region_id==session.user_region_id
+        #     db.user_location.branch_id.requires = IS_IN_DB(db, db.branch.id, '%(branch_name)s')
     return None
 
 @auth.requires_login()
@@ -148,12 +161,7 @@ def add_user():
         response.flash = 'New user added successfully.'
         redirect( back_url )
 
-    my_extra_element = DIV(
-                            A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
-                                SPAN('Back', _class="buttontext button", _title="Back"), 
-                                _href=back_url, 
-                                _class="button btn btn-default btn-secondary"),
-                       _class="form_header row_buttons")
+    my_extra_element = form_extra_element(back_url)
     grid[0].insert(0, my_extra_element)
     return dict(grid=grid, title=request.vars['title'])
 
@@ -169,10 +177,6 @@ def edit_user():
 
     emails = db(db.auth_user.email != user.email)
     db.auth_user.email.requires = IS_NOT_IN_DB(emails, 'auth_user.email')
-
-    # if user_loc:
-    #     allowed_branches = db(db.branch.region_id==user_loc['region_id'])
-    #     db.user_location.branch_id.requires = IS_IN_DB(allowed_branches, 'branch.branch_name')
 
     region_branch_common_filter()
 
@@ -198,11 +202,6 @@ def edit_user():
         response.flash = 'User record updated successfully.'
         redirect( back_url )
 
-    my_extra_element = DIV(
-                            A(SPAN(XML("&nbsp"), _class="icon arrowleft icon-arrow-left glyphicon glyphicon-arrow-left"), 
-                                SPAN('Back', _class="buttontext button", _title="Back"), 
-                                _href=back_url, 
-                                _class="button btn btn-default btn-secondary"),
-                       _class="form_header row_buttons")
+    my_extra_element = form_extra_element(back_url)
     grid[0].insert(0, my_extra_element)
     return dict(grid=grid, title=request.vars['title'])

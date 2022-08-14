@@ -10,12 +10,17 @@
     jQuery("#no_table_region_id").change(function(){
         region_id = $(this).val();
         branch_id = jQuery('#no_table_branch_id').val();
+        // initial try
         // ajax("{{=URL('library', 'branches')}}" + '?region_id=' + region_id, [], 'no_table_branch_id');
-        ajax("{{=URL('library', 'branches')}}" + '?region_id=' + region_id, [],
-            options => { jQuery('#no_table_branch_id').html(options),
-                         jQuery('#no_table_branch_id').val(branch_id)
-                       });
-        // jQuery('#no_table_branch_id').val(branch_id);
+        if (!branch_id) {
+            ajax("{{=URL('library', 'branches')}}" + '?region_id=' + region_id, [], 'no_table_branch_id');}
+        else {
+            ajax("{{=URL('library', 'branches')}}" + '?region_id=' + region_id, [],
+                options => { jQuery('#no_table_branch_id').html(options),
+                             jQuery('#no_table_branch_id').val(branch_id)
+                           }); 
+             }
+        // jQuery('#no_table_branch_id').val(branch_id); // this will "not run"
     });
 
 </script>
