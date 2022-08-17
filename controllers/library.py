@@ -57,18 +57,18 @@ def manage_users():
     action = ''
     if not tablename in db.tables: raise HTTP(403)
 
-    # todo: filter users according to admin's level of access
-    myrows = None
-    if session.user_branch_id:
-        myrows = db(db.user_location.branch_id==session.user_branch_id).select(db.user_location.auth_user_id)
-    else:
-        if session.user_region_id:
-            myrows = db(db.user_location.region_id==session.user_region_id).select(db.user_location.auth_user_id)
-    if myrows:
-        allowed_user_ids = [i['auth_user_id'] for i in myrows]
-        db.auth_user._common_filter = lambda q: db.auth_user.id.belongs(allowed_user_ids)
-
     if tablename == 'auth_user':
+        # feature: filter users according to admin's level of access
+        myrows = None
+        if session.user_branch_id:
+            myrows = db(db.user_location.branch_id==session.user_branch_id).select(db.user_location.auth_user_id)
+        else:
+            if session.user_region_id:
+                myrows = db(db.user_location.region_id==session.user_region_id).select(db.user_location.auth_user_id)
+        if myrows:
+            allowed_user_ids = [i['auth_user_id'] for i in myrows]
+            db.auth_user._common_filter = lambda q: db.auth_user.id.belongs(allowed_user_ids)
+
         if any(x in request.args for x in ['new', 'edit']):
             action = 'new' if 'new' in request.args else 'edit'
 
@@ -82,6 +82,7 @@ def manage_users():
 
     grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
         formname=tablename+'_form', maxtextlength=40,
+        links = [lambda row: A('Groups', _href=URL('library', 'manage_users', args='auth_membership'))]
         # links = [
         #     lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
         #     # 'EDIT', _href=URL('library', 'branches', args=8, 
@@ -94,7 +95,8 @@ def manage_users():
         #     _class='button btn btn-secondary'),
         #     ]
         )
-    # grid.links = [lambda row: A('Test', _href="#")]
+
+    # grid.links = [lambda row: A('Groups', _href="#")]
     return dict(grid=grid, title=title, action=action)
 
 def editUserAnchor():
@@ -121,7 +123,6 @@ def branches():
         else:
             branches = db(db.branch.region_id==request.vars.region_id).select(db.branch.ALL)
             ops1 = ['<option value=""></option>']
-        [print(i['id'], i['branch_name']) for i in branches]
         ops = ops1 + [f"<option value={i['id']}>{i['branch_name']}</option>" for i in branches]
     return ops
 
@@ -169,6 +170,7 @@ def add_user():
 def edit_user():
     user = db.auth_user(request.args(0))
     user_loc = db.user_location(auth_user_id=user.id)
+    user_group = db.auth_
 
     db.auth_user.password.writable = False
     db.auth_user.password.readable = False
