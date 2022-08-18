@@ -170,7 +170,7 @@ def add_user():
 def edit_user():
     user = db.auth_user(request.args(0))
     user_loc = db.user_location(auth_user_id=user.id)
-    user_group = db.auth_
+    # user_group = db.auth_
 
     db.auth_user.password.writable = False
     db.auth_user.password.readable = False
@@ -182,7 +182,15 @@ def edit_user():
 
     region_branch_common_filter()
 
-    grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
+    fields = [f for f in db.auth_user]
+    fields += [f for f in db.user_location]
+
+    u_groups = db(db.auth_membership).select(db.auth_membership.ALL)
+
+    fields += [Field('groups', 'string', )]
+
+    # grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
+    grid = SQLFORM.factory(*fields, _class="web2py_grid")
     for f in db.auth_user:
         grid.vars[f.name] = user[f.name]
     if user_loc:
