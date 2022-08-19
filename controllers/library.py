@@ -170,7 +170,7 @@ def add_user():
 def edit_user():
     user = db.auth_user(request.args(0))
     user_loc = db.user_location(auth_user_id=user.id)
-    # user_group = db.auth_
+    groups = db(db.auth_group).select(db.auth_group.ALL)
 
     db.auth_user.password.writable = False
     db.auth_user.password.readable = False
