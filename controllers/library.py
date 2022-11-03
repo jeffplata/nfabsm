@@ -82,7 +82,7 @@ def manage_users():
 
     grid = SQLFORM.grid(db[tablename], args=[tablename], ondelete=m_ondelete,
         formname=tablename+'_form', maxtextlength=40,
-        links = [lambda row: A('Groups', _href=URL('library', 'manage_users', args='auth_membership'))]
+        # links = [lambda row: A('Groups', _href=URL('library', 'manage_users', args='auth_membership'))]
         # links = [
         #     lambda row: A(SPAN(XML("&nbsp"), _class="icon magnifier icon-zoom-in glyphicon glyphicon-zoom-in"),
         #     # 'EDIT', _href=URL('library', 'branches', args=8, 
@@ -170,7 +170,7 @@ def add_user():
 def edit_user():
     user = db.auth_user(request.args(0))
     user_loc = db.user_location(auth_user_id=user.id)
-    groups = db(db.auth_group).select(db.auth_group.ALL)
+    # groups = db(db.auth_group).select(db.auth_group.ALL)
 
     db.auth_user.password.writable = False
     db.auth_user.password.readable = False
@@ -185,9 +185,9 @@ def edit_user():
     fields = [f for f in db.auth_user]
     fields += [f for f in db.user_location]
 
-    u_groups = db(db.auth_membership).select(db.auth_membership.ALL)
+    # u_groups = db(db.auth_membership).select(db.auth_membership.ALL)
 
-    fields += [Field('groups', 'string', )]
+    # fields += [Field('groups', 'string', )]
 
     # grid = SQLFORM.factory(db.auth_user, db.user_location, _class="web2py_grid")
     grid = SQLFORM.factory(*fields, _class="web2py_grid")

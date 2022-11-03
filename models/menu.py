@@ -109,6 +109,7 @@ if not configuration.get('app.production'):
         (T('Library'), False, None, [
             (T('Regions'), False, URL('library', 'sgrid', args='region', vars=dict(title='Regions') )),
             (T('Users'), False, URL('library', 'manage_users', args='auth_user', vars=dict(title='Users') )),
+            (T('Users Groups'), False, URL('library', 'sgrid', args='auth_membership', vars=dict(title='User Groups') )),
             (T('Organizational Access'), False, URL('library', 'sgrid', args='org_access', vars=dict(title='Organizational Access') )),
         ]),
         (T('Forms'), False, None, [
